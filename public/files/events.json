@@ -1,0 +1,12 @@
+{
+    "events": [
+        {
+            "name": "Horsetooth Half Marathon",
+            "time": "April 17, 2025 06:00:00",
+            "type": "run",
+            "imgUrl": "https://i.ytimg.com/vi/DgvnzUG_LDY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBfusJGzpInG64HX9ukSClQeejZpw",
+            "clubDetails": "Come run the Horsetooth half with us! We'll be meetings somewhere near the start line, and then partying at New Belgium afterwards.",
+            "link": "https://horsetooth-half.com/"
+        }
+    ]
+}
