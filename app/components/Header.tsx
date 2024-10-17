@@ -4,7 +4,6 @@ export default function Header() {
   return (
     <header className='w-full flex justify-between items-center px-8 py-4 top-0'>
       <HeaderItem href='/' title='Home' />
-      <HeaderItem href='/about' title='About' />
       <HeaderItem href='/events' title='Events' />
       <HeaderItem href='/join' title='Become a Member' />
     </header>
