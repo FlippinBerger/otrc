@@ -11,17 +11,17 @@ import Link from 'next/link'
 
 export default function Header() {
   return (
-    <header className='absolute sm:relative w-full px-8 py-4 top-0'>
+    <header className='fixed w-full px-8 py-4 top-0 sm:h-16 bg-black'>
       <div className='hidden sm:flex justify-between items-center'>
         <HeaderItem href='/' title='Home' />
         <HeaderItem href='/events' title='Events' />
         <HeaderItem href='/join' title='Become a Member' />
       </div>
-      <Popover className='sm:hidden absolute right-4'>
-        <PopoverButton className=''>
+      <Popover className='sm:hidden fixed right-4 top-2'>
+        <PopoverButton className='bg-black rounded-full p-1'>
           <RiMenuLine size='36' />
         </PopoverButton>
-        <PopoverPanel anchor='bottom' className='flex flex-col p-2'>
+        <PopoverPanel anchor='bottom' className='flex flex-col p-2 bg-black'>
           <MobileHeaderItem href='/' title='Home' />
           <MobileHeaderItem href='/events' title='Events' />
           <MobileHeaderItem href='/join' title='Become a Member' />
