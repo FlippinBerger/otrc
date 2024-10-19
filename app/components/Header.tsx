@@ -15,7 +15,7 @@ export default function Header() {
       <div className='hidden sm:flex justify-between items-center'>
         <HeaderItem href='/' title='Home' />
         <HeaderItem href='/events' title='Events' />
-        <HeaderItem href='/join' title='Become a Member' />
+        {/*<HeaderItem href='/join' title='Become a Member' />*/}
       </div>
       <Popover className='sm:hidden fixed right-4 top-2'>
         <PopoverButton className='bg-black rounded-full p-1'>
@@ -24,7 +24,8 @@ export default function Header() {
         <PopoverPanel anchor='bottom' className='flex flex-col p-2 bg-black'>
           <MobileHeaderItem href='/' title='Home' />
           <MobileHeaderItem href='/events' title='Events' />
-          <MobileHeaderItem href='/join' title='Become a Member' />
+          {/*<MobileHeaderItem href='/join' title='Become a Member' />*/}
+          <MobileHeaderItem href='/faq' title='FAQ' />
         </PopoverPanel>
       </Popover>
     </header>

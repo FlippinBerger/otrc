@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import FAQ from './faq'
+import Footer from './footer'
 
 export default function Home() {
   return (
@@ -29,22 +30,38 @@ export default function Home() {
       <h1 className='hidden sm:block mt-4 text-3xl lg:text-8xl font-bold'>
         Old Town Run Club
       </h1>
+
       <h1 className='sm:hidden text-4xl mt-4 lg:text-8xl font-bold'>
         FoCo OTRC
       </h1>
+      <h2 className='text-2xl'>6pm Thursdays</h2>
+      <h2 className='text-2xl'>
+        <span className='italic font-bold'>
+          <a href='https://tapandhandle.com/' target='_blank'>
+            Tap and Handle
+          </a>
+        </span>
+      </h2>
+
+      <h2 className='hidden sm:block text-2xl'>Fort Collins, CO</h2>
 
       {/*content*/}
       <h2 className='text-3xl mt-4 sm:text-3xl text-center'>
-        Come check out the coolest crew around!
+        A social club that likes to run!
       </h2>
+      <div className='hidden sm:block'>
+        <FAQ />
+      </div>
 
-      <FAQ />
-
+      {/*
       <Link className='sm:hidden mt-4' href='/join'>
         <button className='text-2xl border border-green-400 rounded-xl p-2'>
           Join Us
         </button>
       </Link>
+      */}
+
+      <Footer />
     </main>
   )
 }
