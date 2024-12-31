@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import Header from './components/Header'
+// import Header from './components/Header'
 
 import { Montserrat } from 'next/font/google'
 
@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={`${montserrat.className} antialiased`}>
-        <Header />
+        {/*<Header />*/}
         <div className='px-4 mx-auto mt-16'>{children}</div>
       </body>
     </html>

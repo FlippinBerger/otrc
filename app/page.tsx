@@ -1,11 +1,11 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import FAQ from './faq'
 import Footer from './footer'
+import Link from 'next/link'
 
 export default function Home() {
   return (
-    <main className='flex flex-col items-center mt-4'>
+    <main className='flex flex-col items-center sm:pt-4'>
       {/*images*/}
       <Image
         width={600}
@@ -27,15 +27,13 @@ export default function Home() {
       />
 
       {/*titles*/}
-      <h1 className='hidden sm:block mt-4 text-3xl lg:text-8xl font-bold'>
+      <h1 className='hidden sm:block mt-4 lg:text-8xl font-bold'>
         Old Town Run Club
       </h1>
 
-      <h1 className='sm:hidden text-4xl mt-4 lg:text-8xl font-bold'>
-        FoCo OTRC
-      </h1>
-      <h2 className='text-2xl'>6pm Thursdays</h2>
-      <h2 className='text-2xl'>
+      <h1 className='sm:hidden mt-4 font-bold'>FoCo OTRC</h1>
+      <h2>6pm Thursdays</h2>
+      <h2>
         <span className='italic font-bold'>
           <a href='https://tapandhandle.com/' target='_blank'>
             Tap and Handle
@@ -52,6 +50,9 @@ export default function Home() {
       <div className='hidden sm:block'>
         <FAQ />
       </div>
+      <Link className='sm:hidden mt-4 text-2xl' href='/faq'>
+        <h1>FAQ</h1>
+      </Link>
 
       {/*
       <Link className='sm:hidden mt-4' href='/join'>
