@@ -4,7 +4,7 @@ import Image from 'next/image'
 export default function Footer() {
   const imageSize = 36
   return (
-    <footer className='flex my-4 items-center gap-2'>
+    <footer className='flex my-4 items-center gap-2 text-white'>
       <a href='https://www.instagram.com/oldtownrunclubfc/' target='_blank'>
         <RiInstagramLine size={imageSize} />
       </a>
