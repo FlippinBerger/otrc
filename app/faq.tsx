@@ -1,7 +1,15 @@
+import Link from 'next/link'
+import { RiHome2Line } from '@remixicon/react'
+
 export default function FAQ() {
   return (
     <div className='my-24 px-8 w-full'>
-      <h1 className='text-4xl font-bold mb-4'>FAQ</h1>
+      <div className='flex justify-between content-center'>
+        <h1 className='text-4xl font-bold mb-4'>FAQ</h1>
+        <Link href='/' className='sm:hidden'>
+          <RiHome2Line className='text-orange-300' />
+        </Link>
+      </div>
       <FAQLine
         q='How do I join?'
         a='Just show up! This is a free and chill run club. Everyone is welcome!'
