@@ -13,7 +13,24 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: 'Old Town Run Club',
   description:
-    'The best run club (in our opinion) based in Old Town Fort Collins, CO',
+    'The best and most chill run club (in our opinion) in Fort Collins, Colorado. Meets at Tap & Handle in Old Town.',
+  keywords: [
+    'Fort Collins',
+    'Run Club',
+    'Old Town',
+    'Tap and Handle',
+    'Tap & Handle',
+  ],
+  authors: [{ name: 'Chris Berger', url: 'https://flippinberger.com' }],
+  robots: {
+    index: true,
+    follow: true,
+    'max-image-preview': 'large',
+    'max-snippet': -1,
+    'max-video-preview': -1,
+    googleBot: 'index, follow',
+  },
+  verification: { google: 'wQ5AtplJOoaHaRgOezrHumvuSY1YSaMKCXtNWxEqu6w' },
 }
 
 export default function RootLayout({
