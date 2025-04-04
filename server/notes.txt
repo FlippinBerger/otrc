@@ -1,0 +1,28 @@
+user
+- id int
+- username string
+- password string
+- salt string
+- bio string
+- admin bool
+- blocked bool
+- verified bool
+- created_at DateTime
+- updated_at DateTime
+- deleted_at DateTime
+
+Event
+- id int
+- type string race | fun run | training | hang
+- poster <user.id>
+- time DateTime
+- description string
+- img?
+- created_at DateTime
+- updated_at DateTime
+- deleted_at DateTime
+
+
+Event Goers
+- event <event.id>
+- user <user.id>

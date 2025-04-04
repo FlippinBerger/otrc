@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100%;
+    /*more of a black here*/
+    /*background-color: #010101;*/
+    /*nice dark green go rams*/
+    background-color: #232b2b;
+}
+
+h1 {
+    color: #9bfbcb;
+    font-weight: bold;
+}
+
+h2,
+h3,
+p {
+    color: #feffec;
+}
+
+/*triadic with the og green*/
+/*h2 {*/
+/*    color: #FBCB9B;*/
+/*}*/
+/**/
+/*h3 {*/
+/*    color: #cb9bfb;*/
+/*}*/
+
+/*.isolate {*/
+/*    height: 100%;*/
+/*}*/
+
+.router-link-active {
+    text-decoration: underline;
+    color: #9bfbcb;
+}
+
+input {
+    color: #9bfbcb;
+    border: 1px solid;
+    border-radius: 4px;
+    padding: 4px;
+    margin: 4px;
+}
+
+textarea {
+    color: #9bfbcb;
+    border: 1px solid;
+    border-radius: 4px;
+    border-color: #9bfbcb;
+    padding: 4px;
+    margin: 4pxs
+}
+
+select {
+    color: #9bfbcb;
+    border: 1px solid;
+    border-radius: 4px;
+    border-color: #9bfbcb;
+    padding: 4px;
+}
+
+button {
+    color: #9bfbcb;
+    cursor: pointer;
+}
