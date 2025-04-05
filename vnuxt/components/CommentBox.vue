@@ -8,7 +8,7 @@ interface Props {
 }
 const { open } = defineProps<Props>()
 
-defineEmits<{
+const emit = defineEmits<{
     (e: 'addComment', comment: string): void
 }>()
 
@@ -20,23 +20,28 @@ const isLoggedIn = computed(() => {
 
 const newComment = ref("")
 
+async function postComment() {
+    emit('addComment', newComment.value);
+    newComment.value = ''
+}
+
 </script>
 
 <template>
     <div v-if="open" class='w-full flex flex-col justify-center'>
         <ul>
             <li v-for="comment in comments" :key="comment.id">
-                <div class='flex gap-2'>
-                    <h4>{{ comment.commenter }}</h4>
-                    <h4>{{ comment.message }}</h4>
+                <div class='flex flex-col gap-2 mb-2 border p-2 rounded-2xl border-[#9bfbcb] w-fit'>
+                    <h3 class='font-bold'>{{ comment.username }}</h3>
+                    <h3 class='text-xl'>{{ comment.message }}</h3>
                 </div>
             </li>
         </ul>
-        <div class='flex gap-2 w-full'>
+        <div class='flex gap-2 w-full mt-2'>
             <textarea
 v-model="newComment" :rows=2 :cols=36 class='w-full focus:outline-none'
                 placeholder="Write a comment..." />
-            <button :class="{ disabled: !newComment }" @click="$emit('addComment', newComment)">Post</button>
+            <button :class="{ disabled: !newComment }" @click="postComment">Post</button>
         </div>
     </div>
     <div v-else>

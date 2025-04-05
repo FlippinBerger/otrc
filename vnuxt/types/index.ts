@@ -43,6 +43,10 @@ export interface Comment {
   created_at: Date;
   updated_at: Date;
   deleted_at?: Date;
+  user_id: number;
+  username: number;
+  user_pic?: string;
+  user_deleted_time?: Date;
 }
 
 interface User {

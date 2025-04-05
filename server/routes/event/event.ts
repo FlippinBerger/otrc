@@ -64,8 +64,22 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
         return reply.code(404).send({ error: `event ${id} doesnt exist` });
       }
 
+      const query = `
+        SELECT
+        comments.*,
+        users.id as user_id,
+        users.username as username,
+        users.img_url as user_pic,
+        users.deleted_at as user_deleted_time
+        FROM comments
+        LEFT JOIN users ON comments.commenter = users.id
+        WHERE comments.deleted_at IS NULL
+        AND event_id = $1
+       `;
+
       const res = await client.query(
-        "SELECT * FROM comments WHERE event_id = $1 AND deleted_at IS NULL",
+        //"SELECT * FROM comments WHERE event_id = $1 AND deleted_at IS NULL",
+        query,
         [id],
       );
 
@@ -75,6 +89,7 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
 
       return reply.code(200).send(res.rows);
     } catch (e) {
+      console.log(e);
       return reply.code(500).send({ error: e });
     } finally {
       client.release();
@@ -109,6 +124,8 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
       if (eventRes.rowCount == null || eventRes.rowCount < 1) {
         return reply.code(404).send({ error: `event ${id} doesnt exist` });
       }
+
+      console.log(`userId: ${userId}, event: ${id}, comment: ${comment}`);
 
       await client.query(
         "INSERT INTO comments (commenter, event_id, message) VALUES ($1, $2, $3)",
