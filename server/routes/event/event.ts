@@ -246,7 +246,7 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
   fastify.get<{
     Params: IDParam;
     Reply: IEventsReply;
-  }>("/events", opts, async (reventsequest, reply) => {
+  }>("/events", opts, async (request, reply) => {
     console.log("--getting events--");
     const client = await fastify.pg.connect();
 
@@ -255,19 +255,16 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
         SELECT
         events.*,
         COUNT(comments.id) as comment_count,
-        COALESCE(json_agg(json_build_object('id', users.id, 'username', users.username, 'img_url', users.img_url)) FILTER (WHERE users.id IS NOT NULL), '[]') AS attendees
+        (SELECT COALESCE(json_agg(json_build_object('id', users.id, 'username', users.username, 'img_url', users.img_url)) FILTER (WHERE users.id IS NOT NULL), '[]')
+         FROM users
+         LEFT JOIN event_goers ON events.id = event_goers.event_id
+         WHERE users.id = event_goers.user_id AND users.deleted_at IS NULL) as attendees
         FROM events
         LEFT JOIN comments ON events.id = comments.event_id
         AND comments.deleted_at IS NULL
-        LEFT JOIN event_goers ON events.id = event_goers.event_id
-        LEFT JOIN users ON event_goers.user_id = users.id
         WHERE events.deleted_at IS NULL
         GROUP BY events.id`;
-      const res = await client.query(
-        query,
-        //"SELECT * FROM events WHERE time > NOW() AND deleted_at IS NULL",
-        //"SELECT events.*, COUNT(comments.id) as comment_count FROM events WHERE deleted_at IS NULL GROUP BY events.id",
-      );
+      const res = await client.query(query);
 
       if (res.rowCount == null || res.rowCount < 1) {
         return reply.code(404).send({ error: "no events found" });
