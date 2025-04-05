@@ -37,9 +37,8 @@ async function postComment() {
                 </div>
             </li>
         </ul>
-        <div class='flex gap-2 w-full mt-2'>
-            <textarea
-v-model="newComment" :rows=2 :cols=36 class='w-full focus:outline-none'
+        <div class='flex gap-2 w-full mt-2 mb-4'>
+            <textarea v-model="newComment" :rows=2 :cols=36 class='w-full focus:outline-none'
                 placeholder="Write a comment..." />
             <button :class="{ disabled: !newComment }" @click="postComment">Post</button>
         </div>
