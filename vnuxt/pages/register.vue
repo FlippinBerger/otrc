@@ -7,6 +7,8 @@ const email = ref("")
 const password = ref("")
 const passwordConfirm = ref("")
 
+const user = useUser();
+
 const passwordsMatch = computed(() => {
     return password.value === passwordConfirm.value
 })
@@ -26,7 +28,7 @@ async function registerSubmit() {
         return
     }
 
-    const res = await $fetch('http://localhost:3000/signup', {
+    const res = await $fetch<{ user_id: string }>('http://localhost:3000/signup', {
         method: 'POST',
         body: {
             username: username.value,
@@ -35,6 +37,9 @@ async function registerSubmit() {
         },
         credentials: 'include'
     })
+
+    user.value = res.user_id;
+    localStorage.setItem('userId', res.user_id);
 
     // refresh cookie and nav back to home
     refreshCookie('otrcSession')

@@ -5,7 +5,6 @@ import {
   EventTypes,
   IDParam,
   OTRCEvent,
-  User,
 } from "../../types.js";
 import { FastifyInstance } from "fastify";
 
@@ -217,6 +216,44 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
       return reply.code(200).send();
     } catch (e) {
       console.log("Unable to attend event:", e);
+      return reply.code(500).send({ error: e });
+    } finally {
+      client.release();
+    }
+  });
+
+  fastify.post<{
+    Params: IDParam;
+  }>("/events/:id/unattend", opts, async (request, reply) => {
+    const { id } = request.params;
+
+    const userId = request.session.user_id;
+    if (!userId) {
+      return reply
+        .code(401)
+        .send({ error: "must be logged in to unattend an event" });
+    }
+
+    const client = await fastify.pg.connect();
+
+    try {
+      const eventRes = await client.query(
+        "SELECT * FROM events WHERE id = $1 AND deleted_at IS NULL",
+        [id],
+      );
+
+      if (eventRes.rowCount == null || eventRes.rowCount < 1) {
+        return reply.code(404).send({ error: `event ${id} doesnt exist` });
+      }
+
+      await client.query(
+        "DELETE FROM event_goers WHERE event_id = $1 AND user_id = $2",
+        [id, userId],
+      );
+
+      return reply.code(200).send();
+    } catch (e) {
+      console.log("Unable to unattend event:", e);
       return reply.code(500).send({ error: e });
     } finally {
       client.release();

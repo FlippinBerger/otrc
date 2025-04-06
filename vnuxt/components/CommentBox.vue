@@ -21,6 +21,7 @@ const isLoggedIn = computed(() => {
 const newComment = ref("")
 
 async function postComment() {
+    if (!newComment.value) return
     emit('addComment', newComment.value);
     newComment.value = ''
 }
@@ -38,9 +39,10 @@ async function postComment() {
             </li>
         </ul>
         <div class='flex gap-2 w-full mt-2 mb-4'>
-            <textarea v-model="newComment" :rows=2 :cols=36 class='w-full focus:outline-none'
+            <textarea
+v-model="newComment" :rows=2 :cols=36 class='w-full focus:outline-none'
                 placeholder="Write a comment..." />
-            <button :class="{ disabled: !newComment }" @click="postComment">Post</button>
+            <button :class="{ disabled: !newComment, enabled: !!newComment }" @click="postComment">Post</button>
         </div>
     </div>
     <div v-else>
@@ -52,5 +54,9 @@ async function postComment() {
 .disabled {
     color: #feffec;
     cursor: initial;
+}
+
+.enabled {
+    text-decoration: underline
 }
 </style>

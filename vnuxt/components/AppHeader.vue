@@ -2,6 +2,7 @@
 import { RiInstagramLine } from '@remixicon/vue'
 
 const sessionCookie = useCookie('otrcSession');
+const user = useUser();
 
 const isLoggedIn = computed(() => {
     return !!sessionCookie.value
@@ -13,7 +14,10 @@ async function logout() {
             method: 'POST',
             credentials: 'include'
         })
-        sessionCookie.value = null
+
+        sessionCookie.value = null;
+        localStorage.removeItem('userId');
+
     } catch (e) {
         console.log('unable to logout', e);
     }

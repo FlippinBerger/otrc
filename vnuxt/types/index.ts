@@ -49,7 +49,7 @@ export interface Comment {
   user_deleted_time?: Date;
 }
 
-interface User {
+export interface User {
   id: number;
   username: string;
   img_url?: string;

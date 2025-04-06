@@ -2,12 +2,14 @@
 definePageMeta({
     layout: false
 });
+
+const user = useUser();
+
 const username = ref("")
 const password = ref("")
 
 async function loginSubmit() {
-    console.log(`logging in with ${username.value} and ${password.value}`)
-    const res = await $fetch('http://localhost:3000/login', {
+    const res = await $fetch<{ user_id: string }>('http://localhost:3000/login', {
         method: 'POST',
         body: {
             username: username.value,
@@ -15,6 +17,9 @@ async function loginSubmit() {
         },
         credentials: 'include'
     })
+
+    user.value = res.user_id;
+    localStorage.setItem('userId', res.user_id);
 
     // refresh cookie and nav back to home
     refreshCookie('otrcSession')

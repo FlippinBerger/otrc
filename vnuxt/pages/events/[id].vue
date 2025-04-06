@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import type { Comment, OTRCEvent } from '~/types'
+import type { Comment, OTRCEvent, User } from '~/types'
 
 const route = useRoute();
 
 const { data: event } = await useFetch<OTRCEvent>(`http://localhost:3000/events/${route.params.id}`)
 
 const { data: comments, refresh: refreshComments } = await useFetch<Comment[]>(`http://localhost:3000/events/${route.params.id}/comments`)
-const { data: attendees } = await useFetch(`http://localhost:3000/events/${route.params.id}/attendees`)
+const { data: attendees, refresh: refreshAttendees } = await useFetch<User[]>(`http://localhost:3000/events/${route.params.id}/attendees`)
 
-const expandAttendees = ref(false)
 const expandComments = ref(true)
 
 async function addComment(comment: string) {
     try {
-        await useFetch(`http://localhost:3000/events/${route.params.id}/comments`, {
+        await $fetch(`http://localhost:3000/events/${route.params.id}/comments`, {
             method: 'POST',
             body: {
                 comment: comment
@@ -23,7 +22,33 @@ async function addComment(comment: string) {
 
         await refreshComments()
     } catch (e) {
-        console.log("Unable to addcomment")
+        console.log("Unable to addcomment", e)
+    }
+}
+
+async function attend() {
+    try {
+        await $fetch(`http://localhost:3000/events/${route.params.id}/attendees`, {
+            method: 'POST',
+            credentials: 'include',
+        })
+
+        await refreshAttendees();
+    } catch (e) {
+        console.log("Unable to attend", e)
+    }
+}
+
+async function unattend() {
+    try {
+        await $fetch(`http://localhost:3000/events/${route.params.id}/unattend`, {
+            method: 'POST',
+            credentials: 'include',
+        })
+
+        await refreshAttendees();
+    } catch (e) {
+        console.log("Unable to unattend", e)
     }
 }
 
@@ -36,7 +61,7 @@ async function addComment(comment: string) {
         <div class='grow w-7/8 sm:w-3/4'>
             <h1 class='text-4xl'>{{ event.name }}</h1>
             <p class='text-xl my-2'>{{ event.description }}</p>
-            <!--Do a little fold out card here for the attendees -->
+            <AttendeesAccordion :attendees=attendees @attend="attend" @unattend="unattend" />
             <!--Comment box Component-->
             <CommentBox :open="expandComments" :comments=comments @add-comment="addComment" />
         </div>
