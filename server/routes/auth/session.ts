@@ -34,9 +34,11 @@ class SessionStore implements FSessionStore {
 const HUNDRED_DAYS = 1000 * 60 * 60 * 24 * 100;
 
 async function sessionPlugin(fastify: FastifyInstance, options: any) {
+  const secret = process.env.SESSION_SECRET!;
+
   fastify.register(fastifyCookie);
   fastify.register(fastifySession, {
-    secret: "blah secret message times eighteenhundred and forty 3",
+    secret: secret,
     cookieName: "otrcSession",
     cookie: {
       httpOnly: false,

@@ -1,5 +1,4 @@
 import Fastify from "fastify";
-import fastifyPostgres from "@fastify/postgres";
 import cors from "@fastify/cors";
 
 import routes from "./routes/routes.js";
@@ -8,6 +7,7 @@ import dbPlugin from "./db/index.js";
 
 const fastify = Fastify({
   logger: true,
+  trustProxy: true,
 });
 
 await fastify.register(cors, {
@@ -16,13 +16,11 @@ await fastify.register(cors, {
 });
 
 // setup up postgres connection
-fastify.register(fastifyPostgres, {
-  connectionString: "postgres://chris@localhost/otrc",
-});
 // add my custom plugins
 fastify.register(dbPlugin);
 fastify.register(sessionPlugin);
 fastify.register(routes);
+
 // run server
 const start = async () => {
   try {

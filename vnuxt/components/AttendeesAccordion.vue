@@ -51,26 +51,16 @@ const isAttending = computed(() => {
 
 <template>
     <div class='mb-4'>
-        <div v-if="attendees!.length < 1">
+        <div v-if="attendees!.length < 1" class='flex justify-between items-center'>
             <h1>No one is currently attending</h1>
-            <button class='border p-2 rounded-2xl mt-2' @click="$emit('attend')">
+            <button class='attendBtn p-2' @click="$emit('attend')">
                 <h1>I'm going</h1>
             </button>
         </div>
         <div v-else class='w-full'>
-            <div class='flex gap-3 justify-between'>
+            <div class='flex gap-3 justify-between hover:cursor-pointer' @click="open = !open">
                 <h1 v-if="!open">{{ nameDisplay }}</h1>
                 <div v-else>
-                    <div v-if="isAttending">
-                        <button @click="$emit('unattend')">
-                            <h1>I'm not going</h1>
-                        </button>
-                    </div>
-                    <div v-else>
-                        <button @click="$emit('attend')">
-                            <h1>I'm going</h1>
-                        </button>
-                    </div>
                     <ul>
                         <li v-for="attendee in attendees" :key=attendee.id>
                             <h1>
@@ -79,15 +69,35 @@ const isAttending = computed(() => {
                         </li>
                     </ul>
                 </div>
-                <button class="self-start" @click="open = !open">
-                    <div v-if="!open">
-                        <RiArrowDownSLine color='#9bfbcb' />
+                <div class='flex gap-2'>
+                    <div v-if="isAttending">
+                        <button class='attendBtn p-2' @click="$emit('unattend')">
+                            <h1>I'm not going</h1>
+                        </button>
                     </div>
                     <div v-else>
-                        <RiCloseLargeFill color='#9bfbcb' />
+                        <button class='attendBtn p-2' @click="$emit('attend')">
+                            <h1>I'm going</h1>
+                        </button>
                     </div>
-                </button>
+                    <button class="self-start">
+                        <div v-if="!open">
+                            <RiArrowDownSLine color='#9bfbcb' />
+                        </div>
+                        <div v-else>
+                            <RiCloseLargeFill color='#9bfbcb' />
+                        </div>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </template>
+
+<style scoped>
+.attendBtn {
+    padding: 4;
+    border: solid;
+    border-radius: 4px;
+}
+</style>
