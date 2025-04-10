@@ -2,17 +2,18 @@
 import type { Comment, OTRCEvent, User } from '~/types'
 
 const route = useRoute();
+const conf = useRuntimeConfig();
 
-const { data: event } = await useFetch<OTRCEvent>(`http://localhost:3000/events/${route.params.id}`)
+const { data: event } = await useFetch<OTRCEvent>(`${conf.public.apiBase}/events/${route.params.id}`)
 
-const { data: comments, refresh: refreshComments } = await useFetch<Comment[]>(`http://localhost:3000/events/${route.params.id}/comments`)
-const { data: attendees, refresh: refreshAttendees } = await useFetch<User[]>(`http://localhost:3000/events/${route.params.id}/attendees`)
+const { data: comments, refresh: refreshComments } = await useFetch<Comment[]>(`${conf.public.apiBase}/events/${route.params.id}/comments`)
+const { data: attendees, refresh: refreshAttendees } = await useFetch<User[]>(`${conf.public.apiBase}/events/${route.params.id}/attendees`)
 
 const expandComments = ref(true)
 
 async function addComment(comment: string) {
     try {
-        await $fetch(`http://localhost:3000/events/${route.params.id}/comments`, {
+        await $fetch(`${conf.public.apiBase}/events/${route.params.id}/comments`, {
             method: 'POST',
             body: {
                 comment: comment
@@ -28,7 +29,7 @@ async function addComment(comment: string) {
 
 async function attend() {
     try {
-        await $fetch(`http://localhost:3000/events/${route.params.id}/attendees`, {
+        await $fetch(`${conf.public.apiBase}/events/${route.params.id}/attendees`, {
             method: 'POST',
             credentials: 'include',
         })
@@ -41,7 +42,7 @@ async function attend() {
 
 async function unattend() {
     try {
-        await $fetch(`http://localhost:3000/events/${route.params.id}/unattend`, {
+        await $fetch(`${conf.public.apiBase}/events/${route.params.id}/unattend`, {
             method: 'POST',
             credentials: 'include',
         })

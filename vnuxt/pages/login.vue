@@ -4,12 +4,13 @@ definePageMeta({
 });
 
 const user = useUser();
+const conf = useRuntimeConfig()
 
 const username = ref("")
 const password = ref("")
 
 async function loginSubmit() {
-    const res = await $fetch<{ user_id: string }>('http://localhost:3000/login', {
+    const res = await $fetch<{ user_id: string }>(`${conf.public.apiBase}/login`, {
         method: 'POST',
         body: {
             username: username.value,

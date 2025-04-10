@@ -9,6 +9,9 @@ const passwordConfirm = ref("")
 
 const user = useUser();
 
+const conf = useRuntimeConfig();
+console.log('api url is', conf.public.apiBase);
+
 const passwordsMatch = computed(() => {
     return password.value === passwordConfirm.value
 })
@@ -28,7 +31,7 @@ async function registerSubmit() {
         return
     }
 
-    const res = await $fetch<{ user_id: string }>('http://localhost:3000/signup', {
+    const res = await $fetch<{ user_id: string }>(`${conf.public.apiBase}/signup`, {
         method: 'POST',
         body: {
             username: username.value,

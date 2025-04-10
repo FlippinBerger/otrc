@@ -3,6 +3,7 @@ import type { EventInfo, OTRCEventCard } from '~/types'
 import { RiAddCircleLine } from '@remixicon/vue'
 
 const cookie = useCookie('otrcSession')
+const conf = useRuntimeConfig()
 
 const isLoggedIn = computed(() => {
     return !!cookie.value
@@ -10,7 +11,7 @@ const isLoggedIn = computed(() => {
 
 const open = ref(false)
 
-const { data: events, refresh: eventsRefresh } = await useFetch<OTRCEventCard[]>('http://localhost:3000/events')
+const { data: events, refresh: eventsRefresh } = await useFetch<OTRCEventCard[]>(`${conf.public.apiBase}/events`)
 
 const close = () => open.value = false
 
@@ -35,7 +36,7 @@ async function createEvent(eventInfo: EventInfo) {
 
     try {
         // make the call
-        const { status, error: resError } = await useFetch('http://localhost:3000/events', {
+        const { status, error: resError } = await useFetch(`${conf.public.apiBase}/events`, {
             method: 'POST',
             body: {
                 name: eventInfo.name,

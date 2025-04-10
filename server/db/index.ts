@@ -4,9 +4,10 @@ import fastifyPostgres from "@fastify/postgres";
 import fs from "fs";
 
 async function dbPlugin(fastify: FastifyInstance, options: any) {
-  const connString =
-    process.env.DB_CONN_STRING || "postgres://chris@localhost/otrc";
-  fastify.register(fastifyPostgres, {
+  const connString = process.env.DB_URL || "postgres://chris@localhost/otrc";
+
+  console.log("connString is", connString);
+  await fastify.register(fastifyPostgres, {
     connectionString: connString,
   });
 

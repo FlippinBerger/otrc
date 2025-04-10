@@ -3,6 +3,7 @@ import { RiInstagramLine } from '@remixicon/vue'
 
 const sessionCookie = useCookie('otrcSession');
 const user = useUser();
+const conf = useRuntimeConfig();
 
 const isLoggedIn = computed(() => {
     return !!sessionCookie.value
@@ -10,7 +11,7 @@ const isLoggedIn = computed(() => {
 
 async function logout() {
     try {
-        const res = await $fetch('http://localhost:3000/logout', {
+        const res = await $fetch(`${conf.public.apiBase}/logout`, {
             method: 'POST',
             credentials: 'include'
         })
