@@ -5,6 +5,7 @@
         "start": "node index.js"
     },
     "dependencies": {
+        "@dotenvx/dotenvx": "^1.39.1",
         "@fastify/cookie": "^11.0.2",
         "@fastify/cors": "^11.0.1",
         "@fastify/postgres": "^6.0.2",

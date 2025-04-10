@@ -16,6 +16,11 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@nuxt/test-utils",
   ],
+  runtimeConfig: {
+    public: {
+      apiBase: "http://localhost:3000",
+    },
+  },
   vite: {
     plugins: [tailwindcss()],
   },
