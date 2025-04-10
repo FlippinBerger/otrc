@@ -14,10 +14,13 @@ const fastify = Fastify({
 });
 
 const isProd = process.env.NODE_ENV === "production";
-const origin = isProd ? "https://web-83246393578.us-central1.run.app" : true;
+const origin = isProd
+  ? "https://web-83246393578.us-central1.run.app:8080"
+  : true;
 
 await fastify.register(cors, {
   origin: origin,
+  methods: ["GET", "POST"],
   credentials: true,
 });
 
