@@ -12,10 +12,10 @@ const emit = defineEmits<{
     (e: 'addComment', comment: string): void
 }>()
 
-const cookie = useCookie('otrcSession')
+const user = useUser();
 
 const isLoggedIn = computed(() => {
-    return !!cookie.value
+    return !!user.value
 })
 
 const newComment = ref("")
@@ -39,8 +39,7 @@ async function postComment() {
             </li>
         </ul>
         <div class='flex gap-2 w-full mt-2 mb-4'>
-            <textarea
-v-model="newComment" :rows=2 :cols=36 class='w-full focus:outline-none'
+            <textarea v-model="newComment" :rows=2 :cols=36 class='w-full focus:outline-none'
                 placeholder="Write a comment..." />
             <button :class="{ disabled: !newComment, enabled: !!newComment }" @click="postComment">Post</button>
         </div>

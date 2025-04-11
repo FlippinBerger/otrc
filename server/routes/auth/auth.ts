@@ -73,7 +73,12 @@ async function authRoutes(fastify: FastifyInstance, opts: any) {
     try {
       console.log("user id is ", request.session.user_id);
       await request.session.destroy();
-      reply.clearCookie("otrcSession");
+      reply.clearCookie("otrcSession", {
+        sameSite: "none",
+        secure: "auto",
+        httpOnly: false,
+        partitioned: true,
+      });
       return reply.code(200).send();
     } catch (e) {
       console.log("unable to log out");

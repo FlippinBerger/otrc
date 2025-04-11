@@ -14,9 +14,7 @@ const fastify = Fastify({
 });
 
 const isProd = process.env.NODE_ENV === "production";
-const origin = isProd
-  ? "https://web-83246393578.us-central1.run.app:8080"
-  : true;
+const origin = isProd ? "https://web-83246393578.us-central1.run.app" : true;
 
 await fastify.register(cors, {
   origin: origin,
@@ -33,6 +31,7 @@ fastify.register(routes);
 // run server
 const start = async () => {
   const IS_CLOUD_RUN = process.env.K_SERVICE !== undefined;
+
   const port = process.env.PORT || 3000;
   const host = IS_CLOUD_RUN ? "0.0.0.0" : undefined;
 
@@ -45,4 +44,5 @@ const start = async () => {
     process.exit(1);
   }
 };
+
 start();

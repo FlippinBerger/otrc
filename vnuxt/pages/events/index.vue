@@ -2,11 +2,11 @@
 import type { EventInfo, OTRCEventCard } from '~/types'
 import { RiAddCircleLine } from '@remixicon/vue'
 
-const cookie = useCookie('otrcSession')
+const user = useUser()
 const conf = useRuntimeConfig()
 
 const isLoggedIn = computed(() => {
-    return !!cookie.value
+    return !!user.value
 })
 
 const open = ref(false)

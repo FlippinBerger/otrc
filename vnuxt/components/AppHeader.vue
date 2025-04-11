@@ -6,7 +6,7 @@ const user = useUser();
 const conf = useRuntimeConfig();
 
 const isLoggedIn = computed(() => {
-    return !!sessionCookie.value
+    return !!user.value
 })
 
 async function logout() {
@@ -17,8 +17,8 @@ async function logout() {
         })
 
         sessionCookie.value = null;
+        user.value = null;
         localStorage.removeItem('userId');
-
     } catch (e) {
         console.log('unable to logout', e);
     }
