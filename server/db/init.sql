@@ -14,6 +14,11 @@ CREATE TABLE IF NOT EXISTS users (
     deleted_at TIMESTAMPTZ
 );
 
+CREATE TABLE IF NOT EXISTS user_tokens (
+    user_id INT REFERENCES users,
+    token TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS events (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,

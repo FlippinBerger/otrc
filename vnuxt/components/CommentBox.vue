@@ -9,14 +9,9 @@ interface Props {
 const { open } = defineProps<Props>()
 
 const emit = defineEmits<{
-    (e: 'addComment', comment: string): void
+    (e: 'addComment', comment: string): void,
+    (e: 'commentsChanged'): void
 }>()
-
-const user = useUser();
-
-const isLoggedIn = computed(() => {
-    return !!user.value
-})
 
 const newComment = ref("")
 
@@ -32,10 +27,7 @@ async function postComment() {
     <div v-if="open" class='w-full flex flex-col justify-center'>
         <ul>
             <li v-for="comment in comments" :key="comment.id">
-                <div class='flex flex-col gap-2 mb-2 border p-2 rounded-2xl border-[#9bfbcb] w-fit'>
-                    <h3 class='font-bold'>{{ comment.username }}</h3>
-                    <h3 class='text-xl'>{{ comment.message }}</h3>
-                </div>
+                <EditableComment :comment="comment" @comments-changed="emit('commentsChanged')" />
             </li>
         </ul>
         <div class='flex gap-2 w-full mt-2 mb-4'>

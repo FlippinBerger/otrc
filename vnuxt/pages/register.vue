@@ -8,6 +8,7 @@ const password = ref("")
 const passwordConfirm = ref("")
 
 const user = useUser();
+const token = useToken();
 
 const conf = useRuntimeConfig();
 console.log('api url is', conf.public.apiBase);
@@ -31,7 +32,7 @@ async function registerSubmit() {
         return
     }
 
-    const res = await $fetch<{ user_id: string }>(`${conf.public.apiBase}/signup`, {
+    const res = await $fetch<{ user_id: string, token: string }>(`${conf.public.apiBase}/signup`, {
         method: 'POST',
         body: {
             username: username.value,
@@ -42,10 +43,11 @@ async function registerSubmit() {
     })
 
     user.value = res.user_id;
+    token.value = res.token;
     localStorage.setItem('userId', res.user_id);
 
     // refresh cookie and nav back to home
-    refreshCookie('otrcSession')
+    //refreshCookie('otrcSession')
     await navigateTo('/')
 }
 </script>

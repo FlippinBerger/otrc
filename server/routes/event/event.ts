@@ -102,42 +102,46 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
   fastify.post<{
     Params: IDParam;
     Body: ICommentBody;
-  }>("/events/:id/comments", opts, async (request, reply) => {
-    const { id } = request.params;
+  }>(
+    "/events/:id/comments",
+    { onRequest: [fastify.jwtAuth] },
+    async (request, reply) => {
+      const { id } = request.params;
 
-    const userId = request.session.user_id;
-    if (!userId) {
-      return reply.code(401).send({ error: "must be logged in to comment" });
-    }
-
-    const client = await fastify.pg.connect();
-
-    const { comment } = request.body;
-
-    try {
-      const eventRes = await client.query(
-        "SELECT * FROM events WHERE id = $1 AND deleted_at IS NULL",
-        [id],
-      );
-
-      if (eventRes.rowCount == null || eventRes.rowCount < 1) {
-        return reply.code(404).send({ error: `event ${id} doesnt exist` });
+      const userId = request.user;
+      if (!userId) {
+        return reply.code(401).send({ error: "must be logged in to comment" });
       }
 
-      console.log(`userId: ${userId}, event: ${id}, comment: ${comment}`);
+      const client = await fastify.pg.connect();
 
-      await client.query(
-        "INSERT INTO comments (commenter, event_id, message) VALUES ($1, $2, $3)",
-        [userId, id, comment],
-      );
+      const { comment } = request.body;
 
-      return reply.code(200).send();
-    } catch (e) {
-      return reply.code(500).send({ error: e });
-    } finally {
-      client.release();
-    }
-  });
+      try {
+        const eventRes = await client.query(
+          "SELECT * FROM events WHERE id = $1 AND deleted_at IS NULL",
+          [id],
+        );
+
+        if (eventRes.rowCount == null || eventRes.rowCount < 1) {
+          return reply.code(404).send({ error: `event ${id} doesnt exist` });
+        }
+
+        console.log(`userId: ${userId}, event: ${id}, comment: ${comment}`);
+
+        await client.query(
+          "INSERT INTO comments (commenter, event_id, message) VALUES ($1, $2, $3)",
+          [userId, id, comment],
+        );
+
+        return reply.code(200).send();
+      } catch (e) {
+        return reply.code(500).send({ error: e });
+      } finally {
+        client.release();
+      }
+    },
+  );
 
   interface IAttendeesReply {
     200: Attendee[];
@@ -186,79 +190,90 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
 
   fastify.post<{
     Params: IDParam;
-  }>("/events/:id/attendees", opts, async (request, reply) => {
-    const { id } = request.params;
+  }>(
+    "/events/:id/attendees",
+    { onRequest: [fastify.jwtAuth] },
+    async (request, reply) => {
+      const { id } = request.params;
 
-    const userId = request.session.user_id;
-    if (!userId) {
-      return reply
-        .code(401)
-        .send({ error: "must be logged in to attend an event" });
-    }
-
-    const client = await fastify.pg.connect();
-
-    try {
-      const eventRes = await client.query(
-        "SELECT * FROM events WHERE id = $1 AND deleted_at IS NULL",
-        [id],
-      );
-
-      if (eventRes.rowCount == null || eventRes.rowCount < 1) {
-        return reply.code(404).send({ error: `event ${id} doesnt exist` });
+      //const userId = request.session.user_id;
+      //const userId = 1;
+      const userId = request.user;
+      console.log("user is", userId);
+      if (!userId) {
+        return reply
+          .code(401)
+          .send({ error: "must be logged in to attend an event" });
       }
 
-      await client.query(
-        "INSERT INTO event_goers (event_id, user_id) VALUES ($1, $2)",
-        [id, userId],
-      );
+      const client = await fastify.pg.connect();
 
-      return reply.code(200).send();
-    } catch (e) {
-      console.log("Unable to attend event:", e);
-      return reply.code(500).send({ error: e });
-    } finally {
-      client.release();
-    }
-  });
+      try {
+        const eventRes = await client.query(
+          "SELECT * FROM events WHERE id = $1 AND deleted_at IS NULL",
+          [id],
+        );
+
+        if (eventRes.rowCount == null || eventRes.rowCount < 1) {
+          return reply.code(404).send({ error: `event ${id} doesnt exist` });
+        }
+
+        await client.query(
+          "INSERT INTO event_goers (event_id, user_id) VALUES ($1, $2)",
+          [id, userId],
+        );
+
+        return reply.code(200).send();
+      } catch (e) {
+        console.log("Unable to attend event:", e);
+        return reply.code(500).send({ error: e });
+      } finally {
+        client.release();
+      }
+    },
+  );
 
   fastify.post<{
     Params: IDParam;
-  }>("/events/:id/unattend", opts, async (request, reply) => {
-    const { id } = request.params;
+  }>(
+    "/events/:id/unattend",
+    { onRequest: [fastify.jwtAuth] },
+    async (request, reply) => {
+      const { id } = request.params;
 
-    const userId = request.session.user_id;
-    if (!userId) {
-      return reply
-        .code(401)
-        .send({ error: "must be logged in to unattend an event" });
-    }
-
-    const client = await fastify.pg.connect();
-
-    try {
-      const eventRes = await client.query(
-        "SELECT * FROM events WHERE id = $1 AND deleted_at IS NULL",
-        [id],
-      );
-
-      if (eventRes.rowCount == null || eventRes.rowCount < 1) {
-        return reply.code(404).send({ error: `event ${id} doesnt exist` });
+      const userId = request.user;
+      if (!userId) {
+        return reply
+          .code(401)
+          .send({ error: "must be logged in to unattend an event" });
       }
 
-      await client.query(
-        "DELETE FROM event_goers WHERE event_id = $1 AND user_id = $2",
-        [id, userId],
-      );
+      const client = await fastify.pg.connect();
 
-      return reply.code(200).send();
-    } catch (e) {
-      console.log("Unable to unattend event:", e);
-      return reply.code(500).send({ error: e });
-    } finally {
-      client.release();
-    }
-  });
+      try {
+        const eventRes = await client.query(
+          "SELECT * FROM events WHERE id = $1 AND deleted_at IS NULL",
+          [id],
+        );
+
+        if (eventRes.rowCount == null || eventRes.rowCount < 1) {
+          return reply.code(404).send({ error: `event ${id} doesnt exist` });
+        }
+
+        await client.query(
+          "DELETE FROM event_goers WHERE event_id = $1 AND user_id = $2",
+          [id, userId],
+        );
+
+        return reply.code(200).send();
+      } catch (e) {
+        console.log("Unable to unattend event:", e);
+        return reply.code(500).send({ error: e });
+      } finally {
+        client.release();
+      }
+    },
+  );
 
   interface IEventsReply {
     200: OTRCEvents[];
@@ -285,6 +300,7 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
     Reply: IEventsReply;
   }>("/events", opts, async (request, reply) => {
     console.log("--getting events--");
+    console.log("auth header:", request.headers.authorization);
     const client = await fastify.pg.connect();
 
     try {
@@ -325,10 +341,8 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
 
   fastify.post<{
     Body: EventBody;
-  }>("/events", opts, async (request, reply) => {
-    console.log("req cookies", request.cookies);
-    console.log("req.session", request.session);
-    const userId = request.session.user_id;
+  }>("/events", { onRequest: [fastify.jwtAuth] }, async (request, reply) => {
+    const userId = request.user;
     if (!userId) {
       return reply
         .code(401)
@@ -380,9 +394,10 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
   fastify.patch<{
     Params: IDParam;
     Body: IEventUpdateBody;
-  }>("/events/:id", opts, (request, reply) => {
+  }>("/events/:id", { onRequest: [fastify.jwtAuth] }, (request, reply) => {
     const { id } = request.params;
-    const userId = request.session.user_id;
+
+    const userId = request.user;
     if (!userId) {
       return reply
         .code(401)
@@ -390,31 +405,6 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
     }
 
     const { type, time, description } = request.body;
-  });
-
-  fastify.post<{
-    Params: IDParam;
-  }>("/events/:id/attend", opts, async (request, reply) => {
-    const { id: eventId } = request.params;
-    const client = await fastify.pg.connect();
-
-    const userId = request.session.user_id;
-    if (!userId) {
-      return reply
-        .code(401)
-        .send({ error: "must be logged in to attend an event" });
-    }
-
-    try {
-      await client.query(
-        "INSERT INTO event_goers (event_id, user_id) VALUES ($1, $2)",
-        [eventId, userId],
-      );
-    } catch (e) {
-      return reply.code(500).send({ error: e });
-    } finally {
-      client.release();
-    }
   });
 }
 

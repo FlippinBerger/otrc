@@ -4,6 +4,8 @@ import type { Comment, OTRCEvent, User } from '~/types'
 const route = useRoute();
 const conf = useRuntimeConfig();
 
+const token = useToken();
+
 const { data: event } = await useFetch<OTRCEvent>(`${conf.public.apiBase}/events/${route.params.id}`)
 
 const { data: comments, refresh: refreshComments } = await useFetch<Comment[]>(`${conf.public.apiBase}/events/${route.params.id}/comments`)
@@ -15,6 +17,9 @@ async function addComment(comment: string) {
     try {
         await $fetch(`${conf.public.apiBase}/events/${route.params.id}/comments`, {
             method: 'POST',
+            headers: {
+                Authorization: `Bearer: ${token.value}`
+            },
             body: {
                 comment: comment
             },
@@ -31,6 +36,9 @@ async function attend() {
     try {
         await $fetch(`${conf.public.apiBase}/events/${route.params.id}/attendees`, {
             method: 'POST',
+            headers: {
+                Authorization: `Bearer: ${token.value}`
+            },
             credentials: 'include',
         })
 
@@ -44,6 +52,9 @@ async function unattend() {
     try {
         await $fetch(`${conf.public.apiBase}/events/${route.params.id}/unattend`, {
             method: 'POST',
+            headers: {
+                Authorization: `Bearer: ${token.value}`
+            },
             credentials: 'include',
         })
 
@@ -64,7 +75,8 @@ async function unattend() {
             <p class='text-xl my-2'>{{ event.description }}</p>
             <AttendeesAccordion :attendees=attendees @attend="attend" @unattend="unattend" />
             <!--Comment box Component-->
-            <CommentBox :open="expandComments" :comments=comments @add-comment="addComment" />
+            <CommentBox :open="expandComments" :comments=comments @add-comment="addComment"
+                @comments-changed="refreshComments" />
         </div>
         <div />
     </div>

@@ -3,10 +3,24 @@ import cors from "@fastify/cors";
 import { config } from "@dotenvx/dotenvx";
 
 import routes from "./routes/routes.js";
-import sessionPlugin from "./routes/auth/session.js";
 import dbPlugin from "./db/index.js";
 
+import jwtPlugin from "./routes/auth/jwt.js";
+import fastifyCookie from "@fastify/cookie";
+
 config();
+
+declare module "fastify" {
+  interface FastifyInstance {
+    jwtAuth: (
+      request: FastifyRequest,
+      reply: FastifyReply,
+    ) => Promise<undefined>;
+  }
+  interface FastifyRequest {
+    user?: number;
+  }
+}
 
 const fastify = Fastify({
   logger: true,
@@ -18,14 +32,16 @@ const origin = isProd ? "https://web-83246393578.us-central1.run.app" : true;
 
 await fastify.register(cors, {
   origin: origin,
-  methods: ["GET", "POST"],
+  methods: ["GET", "PATCH", "POST", "PUT"],
   credentials: true,
 });
 
+fastify.register(fastifyCookie);
+
 // setup up postgres connection
 // add my custom plugins
+fastify.register(jwtPlugin);
 fastify.register(dbPlugin);
-fastify.register(sessionPlugin);
 fastify.register(routes);
 
 // run server

@@ -2,11 +2,15 @@ import { FastifyInstance } from "fastify";
 import { randomBytes, scryptSync, timingSafeEqual } from "crypto";
 
 import { IAuthBody, ISimpleReply, User } from "../../types.js";
+import { createJWT } from "./jwt.js";
+
+const cookieName = "refreshToken";
+const IS_PROD = process.env.NODE_ENV === "production";
+console.log("node env is", process.env.NODE_ENV);
 
 async function authRoutes(fastify: FastifyInstance, opts: any) {
   fastify.post<{
     Body: IAuthBody;
-    Reply: ISimpleReply;
   }>("/signup", opts, async (request, reply) => {
     const { username, email, password } = request.body;
 
@@ -26,14 +30,24 @@ async function authRoutes(fastify: FastifyInstance, opts: any) {
         [username, hashedPass, salt, email, true],
       );
       const id = rows[0].id;
-      if (request.session === undefined) {
-        console.log("request.session is undefined in signup");
-      }
-      if (request.session.user_id === undefined) {
-        console.log("user id is undegined in signup");
-      }
-      request.session.user_id = id;
-      return reply.code(200).send({ user_id: id });
+      const accessToken = createJWT({ user_id: id });
+
+      // set the refreshToken to be used to replenish accessToken on expiration
+      // or browser refresh
+      const refreshToken = createJWT({ user_id: id }, "365 days");
+      reply.setCookie(cookieName, refreshToken, {
+        httpOnly: true,
+        secure: "auto",
+        partitioned: IS_PROD ? true : undefined,
+        sameSite: IS_PROD ? "none" : "lax",
+      });
+
+      await client.query(
+        "INSERT INTO user_tokens (user_id, token) VALUES ($1, $2)",
+        [id, refreshToken],
+      );
+
+      return reply.code(200).send({ user_id: id, token: accessToken });
     } catch (e) {
       return reply.code(500).send({ error: e });
     } finally {
@@ -43,11 +57,8 @@ async function authRoutes(fastify: FastifyInstance, opts: any) {
 
   fastify.post<{
     Body: IAuthBody;
-    Reply: ISimpleReply;
   }>("/login", opts, async (request, reply) => {
     const { username, password } = request.body;
-
-    console.log(`username: ${username}, password: ${password}`);
 
     const { flag, user } = await checkPassword(fastify, username, password);
     if (!flag) {
@@ -55,29 +66,53 @@ async function authRoutes(fastify: FastifyInstance, opts: any) {
     }
 
     const userId = user!.id;
-    if (request.session === undefined) {
-      console.log("request.session is undefined in login");
-    }
-    if (request.session.user_id === undefined) {
-      console.log("user id is undegined in login");
-    }
 
-    console.log("id was set to ", userId);
-    request.session.user_id = userId;
-    return reply.code(200).send({ user_id: userId });
+    const accessToken = createJWT({ user_id: userId });
+
+    // set the refreshToken to be used to replenish accessToken on expiration
+    // or browser refresh
+    const refreshToken = createJWT({ user_id: userId }, "365 days");
+    reply.setCookie(cookieName, refreshToken, {
+      httpOnly: true,
+      secure: "auto",
+      partitioned: IS_PROD ? true : undefined,
+      sameSite: IS_PROD ? "none" : "lax",
+    });
+    const client = await fastify.pg.connect();
+    try {
+      await client.query(
+        "INSERT INTO user_tokens (user_id, token) VALUES ($1, $2)",
+        [userId, refreshToken],
+      );
+
+      return reply.code(200).send({ user_id: userId, token: accessToken });
+    } catch (e) {
+      console.log("unable to add row to user_tokens:", e);
+      return reply.code(500).send({ error: e });
+    } finally {
+      client.release();
+    }
   });
 
   fastify.post<{
     Body: IAuthBody;
   }>("/logout", opts, async (request, reply) => {
     try {
-      console.log("user id is ", request.session.user_id);
-      await request.session.destroy();
-      reply.clearCookie("otrcSession", {
-        sameSite: "none",
+      const client = await fastify.pg.connect();
+      const refreshToken = request.cookies[cookieName];
+      if (!refreshToken) {
+        console.log("no refresh token to clear");
+        return reply.code(200).send();
+      }
+      await client.query("DELETE FROM user_tokens where token = $1", [
+        refreshToken,
+      ]);
+
+      reply.clearCookie(cookieName, {
         secure: "auto",
-        httpOnly: false,
-        partitioned: true,
+        httpOnly: true,
+        partitioned: IS_PROD ? true : undefined,
+        sameSite: IS_PROD ? "none" : "lax",
       });
       return reply.code(200).send();
     } catch (e) {

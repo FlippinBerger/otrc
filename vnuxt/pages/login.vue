@@ -4,13 +4,14 @@ definePageMeta({
 });
 
 const user = useUser();
+const accessToken = useToken();
 const conf = useRuntimeConfig()
 
 const username = ref("")
 const password = ref("")
 
 async function loginSubmit() {
-    const res = await $fetch<{ user_id: string }>(`${conf.public.apiBase}/login`, {
+    const res = await $fetch<{ user_id: string, token: string }>(`${conf.public.apiBase}/login`, {
         method: 'POST',
         body: {
             username: username.value,
@@ -20,6 +21,7 @@ async function loginSubmit() {
     })
 
     user.value = res.user_id;
+    accessToken.value = res.token;
     localStorage.setItem('userId', res.user_id);
 
     // refresh cookie and nav back to home

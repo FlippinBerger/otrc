@@ -3,6 +3,7 @@ import type { EventInfo, OTRCEventCard } from '~/types'
 import { RiAddCircleLine } from '@remixicon/vue'
 
 const user = useUser()
+const token = useToken()
 const conf = useRuntimeConfig()
 
 const isLoggedIn = computed(() => {
@@ -11,7 +12,11 @@ const isLoggedIn = computed(() => {
 
 const open = ref(false)
 
-const { data: events, refresh: eventsRefresh } = await useFetch<OTRCEventCard[]>(`${conf.public.apiBase}/events`)
+const { data: events, refresh: eventsRefresh } = await useFetch<OTRCEventCard[]>(`${conf.public.apiBase}/events`, {
+    headers: {
+        Authorization: `Bearer: ${token.value}`
+    }
+})
 
 const close = () => open.value = false
 

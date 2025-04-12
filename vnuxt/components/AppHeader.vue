@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { RiInstagramLine } from '@remixicon/vue'
 
-const sessionCookie = useCookie('otrcSession');
+//const sessionCookie = useCookie('otrcSession');
 const user = useUser();
+const accessToken = useToken();
 const conf = useRuntimeConfig();
 
 const isLoggedIn = computed(() => {
@@ -12,12 +13,16 @@ const isLoggedIn = computed(() => {
 async function logout() {
     try {
         const res = await $fetch(`${conf.public.apiBase}/logout`, {
+            headers: {
+                Authorization: isLoggedIn.value ? `Bearer ${accessToken.value}` : ''
+            },
             method: 'POST',
             credentials: 'include'
         })
 
-        sessionCookie.value = null;
+        //sessionCookie.value = null;
         user.value = null;
+        accessToken.value = null;
         localStorage.removeItem('userId');
     } catch (e) {
         console.log('unable to logout', e);

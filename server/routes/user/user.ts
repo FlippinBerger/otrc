@@ -54,9 +54,9 @@ async function userRoutes(fastify: FastifyInstance, opts: any) {
   fastify.patch<{
     Params: IDParam;
     Body: IUserUpdate;
-  }>("/users/:id", opts, async (request, reply) => {
+  }>("/users/:id", { onRequest: [fastify.jwtAuth] }, async (request, reply) => {
     const { id } = request.params;
-    const userId = request.session.user_id;
+    const userId = request.user;
     const { username, bio } = request.body;
 
     if (!userId || userId !== id) {
