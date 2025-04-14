@@ -143,8 +143,8 @@ const closePopups = () => {
         <div v-if="isLoggedIn && !open">
             <button @click="toggle">...</button>
         </div>
-        <div v-else-if="isLoggedIn && open" class='modal'>
-            <ul class='flex flex-col size-full m-0 p-1'>
+        <div v-else-if="isLoggedIn && open" class='modal border rounded border-sky-600 h-fit'>
+            <ul class='flex flex-col p-1'>
                 <li class='item self-end'><button class='btn' @click="closePopups">X</button></li>
                 <li v-if="isPoster" class='item' @click="edit">Edit</li>
                 <li v-if="isPoster" class='item' @click="popConfirmModal('delete')">Delete</li>
@@ -158,25 +158,17 @@ const closePopups = () => {
 </template>
 
 <style scoped>
-.confirm {
-    /*border-color: #feffec;*/
-    background-color: #232b2b;
-    opacity: 1;
-    border-color: #9bfbcb;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-}
-
 .modal {
-    background-color: #feffec;
+    background-color: #cb9bfb;
     position: relative;
-    border-radius: 4px;
 }
 
 .btn {
     color: black;
+}
+
+.btn:hover {
+    color: #9bfbcb;
 }
 
 .item {
@@ -184,7 +176,7 @@ const closePopups = () => {
 }
 
 .item:hover {
-    background-color: lightblue;
+    color: #9bfbcb;
     cursor: pointer;
 }
 </style>
