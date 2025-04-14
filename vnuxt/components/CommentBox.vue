@@ -13,6 +13,12 @@ const emit = defineEmits<{
     (e: 'commentsChanged'): void
 }>()
 
+const user = useUser()
+
+const isLoggedIn = computed(() => {
+    return !!user.value
+})
+
 const newComment = ref("")
 
 async function postComment() {
@@ -30,8 +36,9 @@ async function postComment() {
                 <EditableComment :comment="comment" @comments-changed="emit('commentsChanged')" />
             </li>
         </ul>
-        <div class='flex gap-2 w-full mt-2 mb-4'>
-            <textarea v-model="newComment" :rows=2 :cols=36 class='w-full focus:outline-none'
+        <div v-if="isLoggedIn" class='flex gap-2 w-full mt-2 mb-4'>
+            <textarea
+v-model="newComment" :rows=2 :cols=36 class='w-full focus:outline-none'
                 placeholder="Write a comment..." />
             <button :class="{ disabled: !newComment, enabled: !!newComment }" @click="postComment">Post</button>
         </div>
