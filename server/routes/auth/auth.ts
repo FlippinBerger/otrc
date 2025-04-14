@@ -49,6 +49,16 @@ async function authRoutes(fastify: FastifyInstance, opts: any) {
 
       return reply.code(200).send({ user_id: id, token: accessToken });
     } catch (e) {
+      if (e instanceof Error) {
+        if (e.message.includes("duplicate key")) {
+          if (e.message.includes("username")) {
+            return reply.code(409).send({ message: "username already taken" });
+          }
+          if (e.message.includes("email")) {
+            return reply.code(409).send({ message: "email already taken" });
+          }
+        }
+      }
       return reply.code(500).send({ error: e });
     } finally {
       client.release();

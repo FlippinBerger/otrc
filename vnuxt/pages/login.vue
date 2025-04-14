@@ -10,28 +10,36 @@ const conf = useRuntimeConfig()
 const username = ref("")
 const password = ref("")
 
+const error = ref("")
+
 async function loginSubmit() {
-    const res = await $fetch<{ user_id: string, token: string }>(`${conf.public.apiBase}/login`, {
-        method: 'POST',
-        body: {
-            username: username.value,
-            password: password.value,
-        },
-        credentials: 'include'
-    })
+    error.value = ""
+    try {
+        const res = await $fetch<{ user_id: string, token: string }>(`${conf.public.apiBase}/login`, {
+            method: 'POST',
+            body: {
+                username: username.value,
+                password: password.value,
+            },
+            credentials: 'include'
+        })
 
-    user.value = res.user_id;
-    accessToken.value = res.token;
-    localStorage.setItem('userId', res.user_id);
+        user.value = res.user_id;
+        accessToken.value = res.token;
+        localStorage.setItem('userId', res.user_id);
 
-    // refresh cookie and nav back to home
-    refreshCookie('refreshToken')
-    await navigateTo('/')
+        // refresh cookie and nav back to home
+        refreshCookie('refreshToken')
+        await navigateTo('/')
+    } catch (e) {
+        error.value = 'Unable to log in. Please check your username and password, or try signing up if you have yet to make an account';
+    }
 }
 </script>
 
 <template>
     <div class='w-full h-full flex flex-col justify-center items-center absolute bottom-0 gap-2'>
+        <h1 v-if="error !== ''">{{ error }}</h1>
         <input v-model="username" placeholder="username" class='focus:outline-none'>
         <input v-model="password" type='password' placeholder="password" class='focus:outline-none'>
 

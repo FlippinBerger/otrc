@@ -11,7 +11,9 @@ CREATE TABLE IF NOT EXISTS users (
     VERIFIED BOOLEAN NOT NULL DEFAULT False,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    deleted_at TIMESTAMPTZ
+    deleted_at TIMESTAMPTZ,
+    UNIQUE(username),
+    UNIQUE(email)
 );
 
 CREATE TABLE IF NOT EXISTS user_tokens (
@@ -34,7 +36,8 @@ CREATE TABLE IF NOT EXISTS events (
 
 CREATE TABLE IF NOT EXISTS event_goers (
     event_id int REFERENCES events,
-    user_id int REFERENCES users
+    user_id int REFERENCES users,
+    UNIQUE(event_id, user_id)
 );
 
 CREATE TABLE IF NOT EXISTS comments (
@@ -49,5 +52,6 @@ CREATE TABLE IF NOT EXISTS comments (
 
 CREATE TABLE IF NOT EXISTS comment_reports (
     comment_id INT REFERENCES comments,
-    reporter_id INT REFERENCES users
+    reporter_id INT REFERENCES users,
+    UNIQUE(comment_id, reporter_id)
 );
