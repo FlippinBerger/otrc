@@ -72,8 +72,11 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
         users.deleted_at as user_deleted_time
         FROM comments
         LEFT JOIN users ON comments.commenter = users.id
+        LEFT JOIN comment_reports ON comments.id = comment_reports.comment_id
         WHERE comments.deleted_at IS NULL
+        AND comment_reports.comment_id IS NULL
         AND event_id = $1
+        ORDER BY comments.created_at ASC
        `;
 
       const res = await client.query(
@@ -307,7 +310,7 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
       const query = `
         SELECT
         events.*,
-        COUNT(comments.id) as comment_count,
+        COUNT(comments.id) - COUNT(comment_reports.comment_id) as comment_count,
         (SELECT COALESCE(json_agg(json_build_object('id', users.id, 'username', users.username, 'img_url', users.img_url)) FILTER (WHERE users.id IS NOT NULL), '[]')
          FROM users
          LEFT JOIN event_goers ON events.id = event_goers.event_id
@@ -315,6 +318,8 @@ async function eventRoutes(fastify: FastifyInstance, opts: any) {
         FROM events
         LEFT JOIN comments ON events.id = comments.event_id
         AND comments.deleted_at IS NULL
+        LEFT JOIN comment_reports ON comment_reports.comment_id = comments.id
+        AND comment_reports.comment_id IS NOT NULL
         WHERE events.deleted_at IS NULL
         GROUP BY events.id`;
       const res = await client.query(query);

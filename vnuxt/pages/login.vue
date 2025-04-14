@@ -25,7 +25,7 @@ async function loginSubmit() {
     localStorage.setItem('userId', res.user_id);
 
     // refresh cookie and nav back to home
-    refreshCookie('otrcSession')
+    refreshCookie('refreshToken')
     await navigateTo('/')
 }
 </script>

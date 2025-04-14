@@ -96,7 +96,7 @@ async function authRoutes(fastify: FastifyInstance, opts: any) {
 
   fastify.post<{
     Body: IAuthBody;
-  }>("/logout", opts, async (request, reply) => {
+  }>("/logout", { onRequest: [fastify.jwtAuth] }, async (request, reply) => {
     try {
       const client = await fastify.pg.connect();
       const refreshToken = request.cookies[cookieName];
@@ -104,8 +104,11 @@ async function authRoutes(fastify: FastifyInstance, opts: any) {
         console.log("no refresh token to clear");
         return reply.code(200).send();
       }
-      await client.query("DELETE FROM user_tokens where token = $1", [
-        refreshToken,
+
+      const userId = request.user;
+
+      await client.query("DELETE FROM user_tokens where user_id = $1", [
+        userId,
       ]);
 
       reply.clearCookie(cookieName, {

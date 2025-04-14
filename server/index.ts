@@ -32,7 +32,7 @@ const origin = isProd ? "https://web-83246393578.us-central1.run.app" : true;
 
 await fastify.register(cors, {
   origin: origin,
-  methods: ["GET", "PATCH", "POST", "PUT"],
+  methods: ["DELETE", "GET", "PATCH", "POST", "PUT"],
   credentials: true,
 });
 

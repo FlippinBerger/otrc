@@ -46,3 +46,8 @@ CREATE TABLE IF NOT EXISTS comments (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMPTZ
 );
+
+CREATE TABLE IF NOT EXISTS comment_reports (
+    comment_id INT REFERENCES comments,
+    reporter_id INT REFERENCES users
+);

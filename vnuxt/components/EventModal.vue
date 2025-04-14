@@ -58,12 +58,12 @@ const authError = computed(() => {
 </script>
 
 <template>
-    <div class='overlay' @click="$emit('close')">
-        <div class='h-full flex flex-col justify-center'>
-            <div />
-            <div class='modal rounded-xl flex flex-col w-7/8 sm:w-3/4 justify-center mx-auto' @click.stop="eatIt">
+    <div class='overlay bg-[#28282B] opacity-80 no-scroll' @click="$emit('close')">
+        <Teleport to='body'>
+            <div class='modal rounded-xl flex flex-col gap-2 w-7/8 sm:w-3/4 justify-center mx-auto border border-[#9bfbcb]'
+                @click.stop="eatIt">
                 <div class='flex justify-between'>
-                    <h1>Create an Event</h1>
+                    <h1 class='pb-2'>Create an Event</h1>
                     <button @click="$emit('close')">
                         <RiCloseLargeFill />
                     </button>
@@ -81,12 +81,10 @@ const authError = computed(() => {
 
                 <textarea v-model="description" class='focus:outline-none' placeholder='Event info' :rows=5 />
 
-                <button
-class='mt-4 p-1 border rounded w-1/4 self-center'
+                <button class='mt-4 p-1 border rounded w-1/4 self-center'
                     @click="$emit('addEvent', eventInfo)">Create</button>
             </div>
-            <div />
-        </div>
+        </Teleport>
     </div>
 </template>
 
@@ -106,8 +104,7 @@ class='mt-4 p-1 border rounded w-1/4 self-center'
 }
 
 .overlay {
-    background-color: rgba(256, 256, 256, 0.6);
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: 100%;
     top: 0;
@@ -116,7 +113,11 @@ class='mt-4 p-1 border rounded w-1/4 self-center'
 
 .modal {
     background-color: #232b2b;
-    padding: 8px;
+    padding: 24px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .error {

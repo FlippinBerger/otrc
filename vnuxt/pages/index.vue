@@ -1,7 +1,7 @@
 <template>
-    <main class='h-full flex flex-col items-center mt-16 sm:mt-0'>
+    <main class='h-full flex flex-col items-center mt-16 sm:mt-0 sm:mb-8 sm:pb-8'>
         <h1 class='text-4xl'>Old Town Run Club</h1>
-        <img src='~/assets/img/shirt_day.jpg' alt='shirt day' class="object-cover rounded py-4">
+        <img src='~/assets/img/shirt_day.jpg' alt='shirt day' class="object-cover rounded py-4  sm:h-96 sm:w-200">
 
         <span>
             <h2 class='text-2xl'>6pm Thursdays @</h2>

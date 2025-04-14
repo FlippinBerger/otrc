@@ -13,33 +13,35 @@ async function jwtPlugin(fastify: FastifyInstance, opts: any) {
 
       let refresh = false;
 
-      console.log("we'rein the plugin");
-      console.log("auth header", authHeader);
-
       if (authHeader) {
-        const payload = parseJWT(authHeader.split("Bearer: ")[1]);
-        console.log(`payload in the plugin is ${payload}`);
-        if (payload.exp < now || !payload) {
-          refresh = true;
+        const token = authHeader.split("Bearer: ")[1];
+
+        if (!!token) {
+          const payload = parseJWT(token);
+          if (payload.exp < now || !payload) {
+            refresh = true;
+          } else {
+            request.user = payload.user_id;
+          }
         } else {
-          console.log(`adding ${payload.user_id} to the request`);
-          request.user = payload.user_id;
+          refresh = true;
         }
+      } else {
+        refresh = true;
       }
 
       if (!authHeader || refresh) {
-        console.log("in refresh");
         const refreshToken = request.cookies["refreshToken"];
-        console.log("refreshToken", refreshToken);
         if (!refreshToken) {
-          console.log("no refresh token");
           return reply.status(401).send();
         }
 
         const payload = parseJWT(refreshToken);
-        console.log("refresh payload", payload);
         if (payload.exp < now) {
-          console.log("refresh expired");
+          return reply.status(401).send();
+        }
+
+        if (!payload.user_id) {
           return reply.status(401).send();
         }
 
@@ -65,6 +67,5 @@ export function createJWT(payload: object, expires?: string): string {
 
 export function parseJWT(token: string) {
   const decode = jwt.createDecoder();
-  console.log("decoding the jwt");
   return decode(token);
 }

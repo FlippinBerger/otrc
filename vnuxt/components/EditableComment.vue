@@ -27,7 +27,6 @@ const isPoster = computed(() => {
 })
 
 const edit = () => {
-    console.log('edit')
     open.value = false
     editing.value = true
 }
@@ -39,8 +38,6 @@ const cancelEdit = () => {
 
 const confirmEdit = async () => {
     editing.value = false;
-    //TODO: commit the edit
-
     try {
         await $fetch(`${conf.public.apiBase}/comments/${comment.id}`, {
             method: 'PUT',
@@ -59,14 +56,38 @@ const confirmEdit = async () => {
     }
 }
 
-const report = () => {
-    console.log('report')
+const report = async () => {
+    try {
+        await $fetch(`${conf.public.apiBase}/comments/${comment.id}/report`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer: ${token.value}`
+            },
+            credentials: 'include'
+        })
+
+        emit('commentsChanged')
+    } catch (e) {
+        console.log("Unable to update comment", e)
+    }
 }
 
-const deleteComment = () => {
-    console.log('delete')
+const deleteComment = async () => {
+    try {
+        await $fetch(`${conf.public.apiBase}/comments/${comment.id}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer: ${token.value}`
+            },
+            credentials: 'include'
+        })
 
-    deleteModalOpen.value = true
+        emit('commentsChanged')
+    } catch (e) {
+        console.log("Unable to delete comment", e)
+    }
+
+    confirmModalOpen.value = true
 }
 
 const open = ref(false)
@@ -74,12 +95,39 @@ const toggle = () => open.value = !open.value
 
 const editing = ref(false);
 const updatedComment = ref(comment.message);
-const deleteModalOpen = ref(false);
+
+type ConfirmType = 'delete' | 'report';
+const confirmModalOpen = ref(false);
+const confirmType = ref<ConfirmType>('delete')
+
+const popConfirmModal = (t: ConfirmType) => {
+    confirmModalOpen.value = true;
+    confirmType.value = t
+}
+
+const confirmDeny = () => {
+    closePopups();
+}
+
+const confirmConfirm = async () => {
+    closePopups();
+
+    if (confirmType.value === 'delete') {
+        await deleteComment();
+    } else if (confirmType.value === 'report') {
+        await report();
+    }
+}
+
+const closePopups = () => {
+    open.value = false;
+    confirmModalOpen.value = false;
+}
 
 </script>
 
 <template>
-    <div class='flex mb-2 border p-2 rounded-2xl border-[#9bfbcb] w-fit'>
+    <div class='flex gap-4 mb-2 border p-2 rounded-2xl border-[#9bfbcb] w-fit'>
         <div class='flex flex-col gap-2'>
             <h3 class='font-bold'>{{ comment.username }}</h3>
 
@@ -95,22 +143,35 @@ const deleteModalOpen = ref(false);
         <div v-if="isLoggedIn && !open">
             <button @click="toggle">...</button>
         </div>
-        <div v-else-if="isLoggedIn && open" class='float-right modal'>
-            <ul class='flex flex-col size-full m-0 p-0'>
-                <li class='item self-end'><button class='btn' @click="toggle">X</button></li>
+        <div v-else-if="isLoggedIn && open" class='modal'>
+            <ul class='flex flex-col size-full m-0 p-1'>
+                <li class='item self-end'><button class='btn' @click="closePopups">X</button></li>
                 <li v-if="isPoster" class='item' @click="edit">Edit</li>
-                <li v-if="isPoster" class='item' @click="deleteComment">Delete</li>
-                <li class='item' @click="report">Report</li>
+                <li v-if="isPoster" class='item' @click="popConfirmModal('delete')">Delete</li>
+                <li v-else class='item' @click="popConfirmModal('report')">Report</li>
             </ul>
-
         </div>
     </div>
+
+    <ConfirmModal v-if='confirmModalOpen' :confirm-type="confirmType" @confirm='confirmConfirm' @deny='confirmDeny' />
 
 </template>
 
 <style scoped>
+.confirm {
+    /*border-color: #feffec;*/
+    background-color: #232b2b;
+    opacity: 1;
+    border-color: #9bfbcb;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .modal {
     background-color: #feffec;
+    position: relative;
     border-radius: 4px;
 }
 

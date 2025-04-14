@@ -70,3 +70,7 @@ button {
     color: #9bfbcb;
     cursor: pointer;
 }
+
+:root:has(.no-scroll) {
+    overflow: hidden;
+}

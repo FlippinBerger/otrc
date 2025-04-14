@@ -9,9 +9,6 @@ const { events } = defineProps<Props>()
 
 <template>
     <div class='flex flex-col items-center w-full'>
-        <div>
-            <p>Filter controls here</p>
-        </div>
         <div v-if="events && events.length > 0" class='flex justify-center w-3/4'>
             <ul class='mt-4 flex flex-col gap-4'>
                 <li v-for="event in events" :key="event.id">
