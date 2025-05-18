@@ -12,10 +12,11 @@ const isLoggedIn = computed(() => {
 
 const open = ref(false)
 
-const { data: events, refresh: eventsRefresh } = await useFetch<OTRCEventCard[]>(`${conf.public.apiBase}/events`, {
+const { data: events, refresh: eventsRefresh, status: eventFetchStatus } = await useFetch<OTRCEventCard[]>(`${conf.public.apiBase}/events`, {
+    lazy: true,
     headers: {
         Authorization: `Bearer: ${token.value}`
-    }
+    },
 })
 
 const close = () => open.value = false
@@ -80,7 +81,12 @@ async function createEvent(eventInfo: EventInfo) {
                 <h3>Log in to create or interact with events</h3>
             </NuxtLink>
         </div>
-        <EventsList :events="events" />
-        <EventModal v-if="open" :errors="errors" @close=close @add-event="createEvent" />
+        <div v-if="eventFetchStatus === 'pending'">
+            <p>Fetching data...</p>
+        </div>
+        <div v-else>
+            <EventsList :events="events" />
+            <EventModal v-if="open" :errors="errors" @close=close @add-event="createEvent" />
+        </div>
     </div>
 </template>
